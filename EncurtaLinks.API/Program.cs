@@ -46,16 +46,12 @@ namespace EncurtaLinks.API
 
             var app = builder.Build();
 
-            //To do: documentar swagger
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            //app.UseAuthorization();
-
 
             app.MapControllers();
 
