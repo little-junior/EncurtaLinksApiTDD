@@ -4,7 +4,7 @@ API em ASP.NET que visa implementar um encurtador de links
 
 ## Requisitos do Projeto
 
-- Receber uma url qualquer e retornar um objeto que contém:
+- Receber uma URL qualquer e retornar um objeto que contém:
     - O Id da requisição;
     - A URL curta que foi gerada;
     - O tempo em segundos pelo qual a url curta será válida.
