@@ -68,6 +68,7 @@ namespace EncurtaLinks.API.Controllers
 
             return Created($"api/encurta?link={linkGerado.UrlGerado}", new
             {
+                Id = linkGerado.Id,
                 LinkGerado = linkGerado.UrlGerado,
                 DataCriacao = linkGerado.DataCriacao.ToString("G", CultureInfo.InvariantCulture),
                 TempoValidoSegundos = linkGerado.TempoValidadeSegundos
