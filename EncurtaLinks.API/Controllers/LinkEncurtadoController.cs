@@ -9,14 +9,14 @@ using System.Globalization;
 namespace EncurtaLinks.API.Controllers
 {
     [ApiController]
-    [Route("api/encurta")]
+    [Route("api/[controller]")]
   
-    public class LinkEncurtadoController : ControllerBase
+    public class EncurtaController : ControllerBase
     {
         private readonly IRepository<LinkEncurtado> _repository;
         private readonly IEncurtaLinksService _service;
 
-        public LinkEncurtadoController(IRepository<LinkEncurtado> repository, IEncurtaLinksService service)
+        public EncurtaController(IRepository<LinkEncurtado> repository, IEncurtaLinksService service)
         {
             _repository = repository;
             _service = service;
