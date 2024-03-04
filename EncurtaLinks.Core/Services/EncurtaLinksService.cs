@@ -11,6 +11,13 @@ namespace EncurtaLinks.Core.Services
 {
     public class EncurtaLinksService : IEncurtaLinksService
     {
+        public EncurtaLinksService(IRandomizer randomizer)
+        {
+            _randomizer = randomizer;
+        }
+
+        private readonly IRandomizer _randomizer;
+
         static readonly Dictionary<int, string> caracteresPossiveis = new()
         {
             {1, "0123456789"},
@@ -19,8 +26,8 @@ namespace EncurtaLinks.Core.Services
         };
 
         const string UrlPadrao = "https://encurtalinks.com/";
-
         const int SegundosValido = 300;
+
         public LinkEncurtado EncurtarLink(string link, int tempoValidoSegundos)
         {
             LinkValidation(link);
@@ -54,14 +61,13 @@ namespace EncurtaLinks.Core.Services
         {
             var complementoUrl = new StringBuilder();
 
-            var random = new Random();
             int numStringEscolhida, numPosicaoCaracter;
 
             for (int i = 0; i < 7; i++)
             {
-                numStringEscolhida = random.Next(1, 4);
+                numStringEscolhida = _randomizer.Next(1, 4);
 
-                numPosicaoCaracter = random.Next(0, caracteresPossiveis[numStringEscolhida].Length);
+                numPosicaoCaracter = _randomizer.Next(0, caracteresPossiveis[numStringEscolhida].Length);
 
                 complementoUrl.Append(caracteresPossiveis[numStringEscolhida].ElementAt(numPosicaoCaracter));
             }

@@ -1,4 +1,5 @@
 using EncurtaLinks.API.Filters;
+using EncurtaLinks.Core;
 using EncurtaLinks.Core.Models;
 using EncurtaLinks.Core.Services;
 using EncurtaLinks.Data.Contexts;
@@ -43,6 +44,7 @@ namespace EncurtaLinks.API
 
             builder.Services.AddScoped(typeof(IRepository<LinkEncurtado>), typeof(EncurtaLinksRepository));
             builder.Services.AddScoped(typeof(IEncurtaLinksService), typeof(EncurtaLinksService));
+            builder.Services.AddScoped(typeof(IRandomizer), typeof(Randomizer));
 
             var app = builder.Build();
 
