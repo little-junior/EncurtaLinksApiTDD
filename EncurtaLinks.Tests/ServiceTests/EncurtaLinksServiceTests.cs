@@ -1,21 +1,31 @@
+using EncurtaLinks.Core;
 using EncurtaLinks.Core.Exceptions;
 using EncurtaLinks.Core.Models;
 using EncurtaLinks.Core.Services;
 using FluentAssertions;
+using NSubstitute;
 
 namespace EncurtaLinks.Tests.ServiceTests
 {
     public class EncurtaServiceTests
     {
+        private readonly IEncurtaLinksService _sut;
+        private readonly IRandomizer _randomizer;
+        public EncurtaServiceTests()
+        {
+            _randomizer = Substitute.For<IRandomizer>();
+            _sut = new EncurtaLinksService(_randomizer);
+        }
+
         [Fact]
         public void EncurtarLink_LinkValido_RetornaLinkEncurtadoComUltimaParteUrlDeSeteCaracteres()
         {
             //Arrange
-            var encurtaService = new EncurtaLinksService();
+            _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
             var link = "https://globo.com.br";
 
             //Act
-            var linkEncurtado = encurtaService.EncurtarLink(link);
+            var linkEncurtado = _sut.EncurtarLink(link);
 
             //Assert
             linkEncurtado.Should().NotBeNull();
@@ -29,10 +39,10 @@ namespace EncurtaLinks.Tests.ServiceTests
         public void EncurtarLink_LinkValido_RetornaLinkEncurtadoComUrlVinculado(string url)
         {
             //Arrange
-            var encurtaService = new EncurtaLinksService();
+            _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
 
             //Act
-            var linkEncurtado = encurtaService.EncurtarLink(url);
+            var linkEncurtado = _sut.EncurtarLink(url);
 
             //Assert
             linkEncurtado.Should().NotBeNull();
@@ -46,10 +56,10 @@ namespace EncurtaLinks.Tests.ServiceTests
         public void EncurtarLink_LinkValido_RetornaLinkEncurtadoSemErro(string url)
         {
             //Arrange
-            var encurtaService = new EncurtaLinksService();
+            _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
 
             //Act + Assert
-            encurtaService.Invoking(x => x.EncurtarLink(url)).Should().NotThrow<CustomException>("Link é válido");
+            _sut.Invoking(x => x.EncurtarLink(url)).Should().NotThrow<CustomException>("Link é válido");
         }
 
         [Theory]
@@ -59,10 +69,10 @@ namespace EncurtaLinks.Tests.ServiceTests
         public void EncurtarLink_LinkInvalido_RetornaErro(string url)
         {
             //Arrange
-            var encurtaService = new EncurtaLinksService();
+            _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
 
             //Act + Assert
-            encurtaService.Invoking(x => x.EncurtarLink(url)).Should().ThrowExactly<CustomException>("Link é inválido");
+            _sut.Invoking(x => x.EncurtarLink(url)).Should().ThrowExactly<CustomException>("Link é inválido");
         }
         
         [Theory]
@@ -70,15 +80,15 @@ namespace EncurtaLinks.Tests.ServiceTests
         public async Task IsValid_LinkEncurtadoForaDoTempo_RetornaFalse(string link, int tempoValidoSegundos)
         {
             //Arrange
-            var encurtaService = new EncurtaLinksService();
-            var linkEncurtado = encurtaService.EncurtarLink(link, tempoValidoSegundos);
+            _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
+            var linkEncurtado = _sut.EncurtarLink(link, tempoValidoSegundos);
 
             //Act
             await Task.Delay(tempoValidoSegundos * 1000);
-            var isValid = encurtaService.IsValid(linkEncurtado);
+            var isValid = _sut.IsValid(linkEncurtado);
 
             //Assert
-            isValid.Should().BeFalse();
+            isValid.Should().BeFalse("Tempo esgotado");
         }
 
         [Theory]
@@ -86,15 +96,15 @@ namespace EncurtaLinks.Tests.ServiceTests
         public async Task IsValid_LinkEncurtadoDentroDoTempo_RetornaTrue(string link, int tempoValidoSegundos)
         {
             //Arrange
-            var encurtaService = new EncurtaLinksService();
-            var linkEncurtado = encurtaService.EncurtarLink(link, tempoValidoSegundos);
+            _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
+            var linkEncurtado = _sut.EncurtarLink(link, tempoValidoSegundos);
 
             //Act
             await Task.Delay((tempoValidoSegundos - 1) * 1000);
-            var isValid = encurtaService.IsValid(linkEncurtado);
+            var isValid = _sut.IsValid(linkEncurtado);
 
             //Assert
-            isValid.Should().BeTrue();
+            isValid.Should().BeTrue("Tempo válido");
         }
 
         public static TheoryData<string, int> LinksValidosComTemposDiferentesData =>
