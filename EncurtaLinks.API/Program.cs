@@ -1,9 +1,8 @@
 using EncurtaLinks.API.Filters;
 using EncurtaLinks.Core;
 using EncurtaLinks.Core.Models;
-using EncurtaLinks.Core.Services;
+using EncurtaLinks.API.Services;
 using EncurtaLinks.Data.Contexts;
-using EncurtaLinks.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -39,12 +38,10 @@ namespace EncurtaLinks.API
 
             builder.Services.AddDbContext<EncurtaLinksContext>(context =>
             {
-                context.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
+                context.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"));
             });
 
-            builder.Services.AddScoped(typeof(IRepository<LinkEncurtado>), typeof(EncurtaLinksRepository));
-            builder.Services.AddScoped(typeof(IEncurtaLinksService), typeof(EncurtaLinksService));
-            builder.Services.AddScoped(typeof(IRandomizer), typeof(Randomizer));
+            builder.AddServices();
 
             var app = builder.Build();
 
