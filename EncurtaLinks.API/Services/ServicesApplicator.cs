@@ -16,7 +16,7 @@ namespace EncurtaLinks.API.Services
             {
                 options.AddPolicy("MyPolicy", policy =>
                 {
-                    policy.WithOrigins().AllowAnyOrigin();
+                    policy.AllowAnyOrigin();
                 });
             });
         }

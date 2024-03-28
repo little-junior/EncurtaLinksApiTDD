@@ -1,30 +1,29 @@
 ﻿using EncurtaLinks.API.RequestDtos;
 using EncurtaLinks.Core.Exceptions;
 using EncurtaLinks.Core.Models;
-using EncurtaLinks.Core.Services;
-using EncurtaLinks.Data.Repositories;
+using EncurtaLinks.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using Microsoft.AspNetCore.Cors;
 
 namespace EncurtaLinks.API.Controllers
 {
+    [EnableCors("MyPolicy")]
     [ApiController]
     [Route("api/[controller]")]
   
     public class EncurtaController : ControllerBase
     {
-        private readonly IRepository<LinkEncurtado> _repository;
         private readonly IEncurtaLinksService _service;
 
-        public EncurtaController(IRepository<LinkEncurtado> repository, IEncurtaLinksService service)
+        public EncurtaController(IEncurtaLinksService service)
         {
-            _repository = repository;
             _service = service;
         }
         /// <summary>
         /// Retorna o link original vinculado ao encurtado e sua validade
         /// </summary>
-        /// <param name="linkDto"></param>
+        /// <param name="linkRequest"></param>
         /// <returns></returns>
         /// <exception cref="CustomException"></exception>
         /// <response code="200">Retorna o link original</response>
@@ -33,14 +32,9 @@ namespace EncurtaLinks.API.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get([FromQuery]LinkDto linkDto)
+        public async Task<IActionResult> Get([FromQuery]LinkRequest linkRequest)
         {
-            var linkObtido = await _repository.GetByLink(linkDto.Link);
-
-            if (linkObtido == null)
-            {
-                throw new CustomException("Link não encontrado", 404);
-            }
+            var linkObtido = await _service.GetLinkEncurtado(linkRequest.Link);
 
             return Ok(new
             {
@@ -49,10 +43,17 @@ namespace EncurtaLinks.API.Controllers
             });
         }
 
+        [HttpGet("/{code}", Name ="GetRedirect")]
+        public async Task<IActionResult> Get(string code)
+        {
+            var linkObtido = await _service.GetLinkEncurtadoByUltimaParte(code);
+
+            return Redirect(linkObtido.UrlOriginal);
+        }
         /// <summary>
         /// Cria um novo link encurtado
         /// </summary>
-        /// <param name="linkDto"></param>
+        /// <param name="linkRequest"></param>
         /// <returns>Teste</returns>
         /// <response code="201">Cria e retorna o link encurtado</response>
         /// <response code="400">Link original inválido</response>
@@ -60,17 +61,15 @@ namespace EncurtaLinks.API.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromBody] LinkDto linkDto)
+        public async Task<IActionResult> Post([FromBody] LinkRequest linkRequest)
         {
-            var linkGerado = _service.EncurtarLink(linkDto.Link);
+            var linkGerado = await _service.EncurtarLink(linkRequest.Link);
 
-            await _repository.Add(linkGerado);
-
-            return Created($"api/encurta?link={linkGerado.UrlGerado}", new
+            return CreatedAtRoute("GetRedirect", new { code = linkGerado.UltimaParteUrl}, new
             {
-                Id = linkGerado.Id,
+                linkGerado.Id,
                 LinkGerado = linkGerado.UrlGerado,
-                DataCriacao = linkGerado.DataCriacao.ToString("G", CultureInfo.InvariantCulture),
+                linkGerado.DataCriacao,
                 TempoValidoSegundos = linkGerado.TempoValidadeSegundos
             });
         }

@@ -2,13 +2,12 @@
 {
     public class LinkEncurtado
     {
-        //Todo: arrumar nome das classes e gerar outro banco
         public LinkEncurtado() { }
 
-        public int Id { get; set; }
-        public string UrlOriginal { get; set; }
-        public string UrlGerado { get; set; }
-        public string UltimaParteUrl { get; set; }
+        public Guid Id { get; set; }
+        public string UrlOriginal { get; set; } = string.Empty;
+        public string UrlGerado { get; set; } = string.Empty;
+        public string UltimaParteUrl { get; set; } = string.Empty;
         public int TempoValidadeSegundos { get; set; }
         public DateTime DataCriacao { get; set; }
     }

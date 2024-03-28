@@ -1,31 +1,37 @@
 using EncurtaLinks.Core;
 using EncurtaLinks.Core.Exceptions;
 using EncurtaLinks.Core.Models;
-using EncurtaLinks.Core.Services;
+using EncurtaLinks.API.Services;
 using FluentAssertions;
 using NSubstitute;
+using EncurtaLinks.Data.Repositories;
+using EncurtaLinks.Data.Contexts;
 
 namespace EncurtaLinks.Tests.ServiceTests
 {
     public class EncurtaServiceTests
     {
         private readonly IEncurtaLinksService _sut;
+        private readonly ILinkEncurtadoRepository _repositoryMock;
+        private readonly EncurtaLinksContext _context;
         private readonly IRandomizer _randomizer;
         public EncurtaServiceTests()
         {
             _randomizer = Substitute.For<IRandomizer>();
-            _sut = new EncurtaLinksService(_randomizer);
+            _repositoryMock = Substitute.For<ILinkEncurtadoRepository>();
+            _context = Substitute.For<EncurtaLinksContext>();
+            _sut = new EncurtaLinksService(_repositoryMock, _randomizer);
         }
 
         [Fact]
-        public void EncurtarLink_LinkValido_RetornaLinkEncurtadoComUltimaParteUrlDeSeteCaracteres()
+        public async Task EncurtarLink_LinkValido_RetornaLinkEncurtadoComUltimaParteUrlDeSeteCaracteres()
         {
             //Arrange
             _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
             var link = "https://globo.com.br";
 
             //Act
-            var linkEncurtado = _sut.EncurtarLink(link);
+            var linkEncurtado = await _sut.EncurtarLink(link);
 
             //Assert
             linkEncurtado.Should().NotBeNull();
@@ -36,13 +42,13 @@ namespace EncurtaLinks.Tests.ServiceTests
         [InlineData("https://globo.com.br")]
         [InlineData("https://ada.tech")]
         [InlineData("https://youtube.com")]
-        public void EncurtarLink_LinkValido_RetornaLinkEncurtadoComUrlVinculado(string url)
+        public async Task EncurtarLink_LinkValido_RetornaLinkEncurtadoComUrlVinculado(string url)
         {
             //Arrange
             _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
 
             //Act
-            var linkEncurtado = _sut.EncurtarLink(url);
+            var linkEncurtado = await _sut.EncurtarLink(url);
 
             //Assert
             linkEncurtado.Should().NotBeNull();
@@ -59,7 +65,7 @@ namespace EncurtaLinks.Tests.ServiceTests
             _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
 
             //Act + Assert
-            _sut.Invoking(x => x.EncurtarLink(url)).Should().NotThrow<CustomException>("Link é válido");
+            _sut.Invoking(x => x.EncurtarLink(url)).Should().NotThrowAsync<CustomException>("Link é válido");
         }
 
         [Theory]
@@ -72,7 +78,7 @@ namespace EncurtaLinks.Tests.ServiceTests
             _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
 
             //Act + Assert
-            _sut.Invoking(x => x.EncurtarLink(url)).Should().ThrowExactly<CustomException>("Link é inválido");
+            _sut.Invoking(x => x.EncurtarLink(url)).Should().ThrowExactlyAsync<CustomException>("Link é inválido");
         }
         
         [Theory]
@@ -81,7 +87,7 @@ namespace EncurtaLinks.Tests.ServiceTests
         {
             //Arrange
             _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
-            var linkEncurtado = _sut.EncurtarLink(link, tempoValidoSegundos);
+            var linkEncurtado = await _sut.EncurtarLink(link, tempoValidoSegundos);
 
             //Act
             await Task.Delay(tempoValidoSegundos * 1000);
@@ -97,7 +103,7 @@ namespace EncurtaLinks.Tests.ServiceTests
         {
             //Arrange
             _randomizer.Next(Arg.Any<int>(), Arg.Any<int>()).Returns(1);
-            var linkEncurtado = _sut.EncurtarLink(link, tempoValidoSegundos);
+            var linkEncurtado = await _sut.EncurtarLink(link, tempoValidoSegundos);
 
             //Act
             await Task.Delay((tempoValidoSegundos - 1) * 1000);

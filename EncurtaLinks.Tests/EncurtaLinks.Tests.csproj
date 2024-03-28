@@ -25,7 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EncurtaLinks.API\EncurtaLinks.API.csproj" />
     <ProjectReference Include="..\EncurtaLinks.Core\EncurtaLinks.Core.csproj" />
+    <ProjectReference Include="..\EncurtaLinks.Data\EncurtaLinks.Data.csproj" />
   </ItemGroup>
 
 </Project>
