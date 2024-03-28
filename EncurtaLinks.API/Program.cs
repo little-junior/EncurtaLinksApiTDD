@@ -1,4 +1,3 @@
-using EncurtaLinks.API.Filters;
 using EncurtaLinks.Core;
 using EncurtaLinks.Core.Models;
 using EncurtaLinks.API.Services;
@@ -6,6 +5,7 @@ using EncurtaLinks.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using EncurtaLinks.API.ErrorHandler;
 
 namespace EncurtaLinks.API
 {
@@ -17,10 +17,7 @@ namespace EncurtaLinks.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers(options =>
-            {
-                options.Filters.Add<ExceptionFilter>();
-            });
+            builder.Services.AddControllers();
 
             builder.AddCors();
 
@@ -32,7 +29,7 @@ namespace EncurtaLinks.API
                 {
                     Version = "v1",
                     Title = "EncurtaLinks API",
-                    Description = "ASP.NET Web API de um encurtador de links feito em .NET 8 "
+                    Description = "ASP.NET API de um encurtador de links feito em .NET 8 "
                 });
 
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -54,6 +51,8 @@ namespace EncurtaLinks.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.ConfigureExceptionHandler();
 
             app.UseCors();
 
