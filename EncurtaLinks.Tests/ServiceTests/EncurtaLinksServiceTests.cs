@@ -4,7 +4,6 @@ using EncurtaLinks.Core.Models;
 using EncurtaLinks.API.Services;
 using FluentAssertions;
 using NSubstitute;
-using EncurtaLinks.Data.Repositories;
 using EncurtaLinks.Data.Contexts;
 
 namespace EncurtaLinks.Tests.ServiceTests
@@ -12,15 +11,13 @@ namespace EncurtaLinks.Tests.ServiceTests
     public class EncurtaServiceTests
     {
         private readonly IEncurtaLinksService _sut;
-        private readonly ILinkEncurtadoRepository _repositoryMock;
         private readonly EncurtaLinksContext _context;
         private readonly IRandomizer _randomizer;
         public EncurtaServiceTests()
         {
             _randomizer = Substitute.For<IRandomizer>();
-            _repositoryMock = Substitute.For<ILinkEncurtadoRepository>();
             _context = Substitute.For<EncurtaLinksContext>();
-            _sut = new EncurtaLinksService(_repositoryMock, _randomizer);
+            _sut = new EncurtaLinksService(_context, _randomizer);
         }
 
         [Fact]
