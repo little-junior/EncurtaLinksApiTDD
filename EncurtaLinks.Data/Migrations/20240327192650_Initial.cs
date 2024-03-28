@@ -15,18 +15,23 @@ namespace EncurtaLinks.Data.Migrations
                 name: "LinksEncurtados",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UrlOriginal = table.Column<string>(type: "TEXT", nullable: false),
-                    UrlGerado = table.Column<string>(type: "TEXT", nullable: false),
-                    UltimaParteUrl = table.Column<string>(type: "TEXT", nullable: false),
-                    TempoValidadeSegundos = table.Column<int>(type: "INTEGER", nullable: false),
-                    DataCriacao = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UrlOriginal = table.Column<string>(type: "text", nullable: false),
+                    UrlGerado = table.Column<string>(type: "text", nullable: false),
+                    UltimaParteUrl = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false),
+                    TempoValidadeSegundos = table.Column<int>(type: "integer", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LinksEncurtados", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LinksEncurtados_UltimaParteUrl",
+                table: "LinksEncurtados",
+                column: "UltimaParteUrl",
+                unique: true);
         }
 
         /// <inheritdoc />

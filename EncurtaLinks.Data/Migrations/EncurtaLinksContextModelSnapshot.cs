@@ -4,6 +4,7 @@ using EncurtaLinks.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,33 +16,41 @@ namespace EncurtaLinks.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("EncurtaLinks.Core.Models.LinkEncurtado", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("TempoValidadeSegundos")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("UltimaParteUrl")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
 
                     b.Property<string>("UrlGerado")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("UrlOriginal")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UltimaParteUrl")
+                        .IsUnique();
 
                     b.ToTable("LinksEncurtados");
                 });
