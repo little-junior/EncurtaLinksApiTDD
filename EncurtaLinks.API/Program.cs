@@ -21,6 +21,9 @@ namespace EncurtaLinks.API
             {
                 options.Filters.Add<ExceptionFilter>();
             });
+
+            builder.AddCors();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -51,6 +54,8 @@ namespace EncurtaLinks.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors();
 
             app.MapControllers();
 
