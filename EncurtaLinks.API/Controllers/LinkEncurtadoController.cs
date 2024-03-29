@@ -43,10 +43,10 @@ namespace EncurtaLinks.API.Controllers
             });
         }
 
-        [HttpGet("/{code}", Name ="GetRedirect")]
-        public async Task<IActionResult> Get(string code)
+        [HttpGet("/{ultimaParteUrl}", Name ="GetRedirect")]
+        public async Task<IActionResult> Get(string ultimaParteUrl)
         {
-            var linkObtido = await _service.GetLinkEncurtadoByUltimaParte(code);
+            var linkObtido = await _service.GetLinkEncurtadoByUltimaParte(ultimaParteUrl);
 
             return Redirect(linkObtido.UrlOriginal);
         }

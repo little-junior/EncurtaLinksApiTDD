@@ -14,7 +14,7 @@ namespace EncurtaLinks.API.ErrorHandler
                 {
                     context.Response.ContentType = "application/json";
 
-                    var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+                    var error = context.Features.Get<IExceptionHandlerFeature>();
 
                     if (error is not null)
                     {

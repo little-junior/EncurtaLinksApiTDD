@@ -23,13 +23,6 @@ namespace EncurtaLinks.API.Services
         private readonly IRandomizer _randomizer;
         private readonly EncurtaLinksContext _context;
 
-        static readonly Dictionary<int, string> caracteresPossiveis = new()
-        {
-            {1, "0123456789"},
-            {2, "abcdefghijklmnopqrstuvwxyz"},
-            {3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
-        };
-
         public async Task<LinkEncurtado> EncurtarLink(string link, int tempoValidoSegundos)
         {
             LinkValidation(link);
@@ -57,7 +50,7 @@ namespace EncurtaLinks.API.Services
         public async Task<LinkEncurtado> GetLinkEncurtado(string url)
         {
             var linkObtido = await _context.LinksEncurtados.AsNoTracking().SingleOrDefaultAsync(l => l.UrlGerado == url)
-                ?? throw new CustomException("Link não encontrado", 404);
+                ?? throw new CustomException("Link não encontrado", "Not Found", 404);
 
             return linkObtido;
         }
@@ -85,9 +78,9 @@ namespace EncurtaLinks.API.Services
                 {
                     numStringEscolhida = _randomizer.Next(1, 4);
 
-                    numPosicaoCaracter = _randomizer.Next(0, caracteresPossiveis[numStringEscolhida].Length);
+                    numPosicaoCaracter = _randomizer.Next(0, LinkEncurtadoConfigs.caracteresPossiveis[numStringEscolhida].Length);
 
-                    complementoBuilder.Append(caracteresPossiveis[numStringEscolhida].ElementAt(numPosicaoCaracter));
+                    complementoBuilder.Append(LinkEncurtadoConfigs.caracteresPossiveis[numStringEscolhida].ElementAt(numPosicaoCaracter));
                 }
 
                 var complementoUrl = complementoBuilder.ToString();
@@ -100,14 +93,13 @@ namespace EncurtaLinks.API.Services
                 complementoBuilder.Clear();
                 tentativas++;
             }
-
-            throw new CustomException("Ocorreu um erro", 500);
+            throw new CustomException("Ocorreu um erro de processamento. Tente novamente", "Internal Server Error", 500);
         }
         private void LinkValidation(string link)
         {
             if (!Uri.TryCreate(link, UriKind.Absolute, out Uri? _))
             {
-                throw new CustomException("Link inválido", 400);
+                throw new CustomException("Link inválido", "Bad Request", 400);
             }
         }
         private async Task<bool> UltimaParteUrlCheck(string ultimaParteUrl)
@@ -121,7 +113,7 @@ namespace EncurtaLinks.API.Services
 
             if (link is null)
             {
-                throw new CustomException("Link não encontrado", 404);
+                throw new CustomException("Link não encontrado", "Not Found", 404);
             }
 
             return link;
