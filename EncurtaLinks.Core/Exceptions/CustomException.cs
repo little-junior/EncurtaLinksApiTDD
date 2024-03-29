@@ -8,10 +8,12 @@ namespace EncurtaLinks.Core.Exceptions
 {
     public class CustomException : Exception
     {
-        public int StatusCode { get; set; }
+        public int StatusCode { get; }
+        public string Error { get; }
 
-        public CustomException(string message, int statusCode) : base(message)
+        public CustomException(string message, string error, int statusCode) : base(message)
         {
+            Error = error;
             StatusCode = statusCode;
         }
     }
